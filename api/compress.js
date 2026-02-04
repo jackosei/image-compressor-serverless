@@ -27,8 +27,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Parse multipart form data
-    const form = new multiparty.Form();
+    // Parse multipart form data with size limits
+    const form = new multiparty.Form({
+      maxFilesSize: 4 * 1024 * 1024, // 4MB limit for Vercel free tier
+    });
 
     form.parse(req, async (err, fields, files) => {
       if (err) {

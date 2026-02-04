@@ -29,10 +29,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Parse multipart form data
+    // Parse multipart form data with size limits
     const form = new multiparty.Form({
       maxFiles: 20,
-      maxFilesSize: 200 * 1024 * 1024, // 200MB total
+      maxFilesSize: 20 * 1024 * 1024, // 20MB total (max ~5 images at 4MB each)
     });
 
     form.parse(req, async (err, fields, files) => {

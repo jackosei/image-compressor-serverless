@@ -209,6 +209,20 @@ function handleFiles(files) {
     return;
   }
 
+  // Check file size limit (4MB per file for Vercel free tier)
+  const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+  const oversizedFiles = imageFiles.filter((file) => file.size > MAX_FILE_SIZE);
+
+  if (oversizedFiles.length > 0) {
+    const fileList = oversizedFiles
+      .map((f) => `${f.name} (${formatFileSize(f.size)})`)
+      .join("\n");
+    alert(
+      `The following files exceed the 4MB limit:\n\n${fileList}\n\nPlease use smaller images or compress them first.`,
+    );
+    return;
+  }
+
   // Check compression limit
   if (!checkCompressionLimit()) {
     showLimitModal();
