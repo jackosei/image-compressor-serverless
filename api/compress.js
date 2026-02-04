@@ -3,9 +3,10 @@ const { compressImageBuffer } = require("./_utils/tinifyService");
 const path = require("path");
 
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // Set CORS headers - restrict to frontend origin
+  const allowedOrigin = process.env.ALLOW_ORIGIN || "*";
   res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,OPTIONS,PATCH,DELETE,POST,PUT",

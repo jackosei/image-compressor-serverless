@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // Set CORS headers - restrict to frontend origin
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
