@@ -101,26 +101,35 @@ The web interface supports both single and batch image compression:
 Enable automated directory monitoring:
 
 ```bash
-APP_MODE=local npm start
+npm run local-mode
 ```
 
-- Place images in the `uploads/` directory
-- Compressed files automatically appear in `converted/`
+- Place images in the `files/in/` directory
+- Compressed files automatically appear in `files/out/`
 - Set output format via `OUTPUT_FORMAT` in `.env`
 
 ## Deployment
 
-This app can be easily deployed to run locally or on platforms like **Render** or **Railway** with minimal configuration.
+This application is designed for modern serverless deployment with separated frontend and backend:
 
-### Option 1: Run Locally
+- **Frontend**: Deploy to Netlify (static site)
+- **Backend**: Deploy to Vercel (serverless functions)
 
-Follow the [Installation](#installation) instructions above to run the app on your local machine with your own API key.
+### Prerequisites
 
-### Option 2: Deploy to Render (Recommended)
+1. **Get Your Free Tinify API Key**:
+   - Visit [https://tinypng.com/developers](https://tinypng.com/developers)
+   - Sign up with your email
+   - You'll receive 500 free compressions per month
 
-Render offers a generous free tier perfect for Node.js applications.
+2. **Install CLI Tools** (optional, for local testing):
+   ```bash
+   npm install -g vercel netlify-cli
+   ```
 
-1. **Push to GitHub**
+### Option 1: Deploy Backend to Vercel
+
+1. **Push to GitHub**:
 
    ```bash
    git add .
@@ -128,50 +137,73 @@ Render offers a generous free tier perfect for Node.js applications.
    git push origin main
    ```
 
-2. **Create Render Account**
-   - Go to [https://render.com](https://render.com)
-   - Sign up with GitHub
+2. **Deploy to Vercel**:
+   - Visit [https://vercel.com](https://vercel.com) and sign in with GitHub
+   - Click "New Project" and import your repository
+   - Vercel will auto-detect the configuration from `vercel.json`
+   - Add environment variable in Vercel dashboard:
+     - `TINIFY_KEY` = `your_api_key_here`
+   - Click "Deploy"
+   - Copy your deployment URL (e.g., `https://your-app.vercel.app`)
 
-3. **Create New Web Service**
-   - Click "New +" → "Web Service"
-   - Connect your GitHub repository
-   - Render will auto-detect the `render.yaml` configuration
+3. **Test Your Backend**:
+   ```bash
+   # Test the API endpoint
+   curl https://your-app.vercel.app/api/compress
+   ```
 
-4. **Configure Environment Variables**
-   - In the Render dashboard, go to "Environment"
-   - Add: `TINIFY_KEY` = `your_tinify_api_key`
-   - `APP_MODE` is already set to `online` in render.yaml
+### Option 2: Deploy Frontend to Netlify
 
-5. **Deploy**
-   - Click "Create Web Service"
-   - Wait for deployment (2-3 minutes)
-   - Your app will be live at `https://your-app-name.onrender.com`
+1. **Configure API URL**:
+   - Open `public/config.js`
+   - Set your Vercel backend URL:
+     ```javascript
+     window.API_BASE_URL = "https://your-app.vercel.app";
+     ```
+   - Commit this change:
+     ```bash
+     git add public/config.js
+     git commit -m "Configure production API URL"
+     git push
+     ```
 
-### Option 3: Deploy to Railway
-
-Railway provides simple deployment with automatic HTTPS.
-
-1. **Push to GitHub** (if not already done)
-
-2. **Create Railway Account**
-   - Go to [https://railway.app](https://railway.app)
-   - Sign up with GitHub
-
-3. **Deploy from GitHub**
-   - Click "New Project" → "Deploy from GitHub repo"
+2. **Deploy to Netlify**:
+   - Visit [https://netlify.com](https://netlify.com) and sign in with GitHub
+   - Click "Add new site" → "Import an existing project"
    - Select your repository
-   - Railway auto-detects Node.js and configures build
+   - Netlify will auto-detect settings from `netlify.toml`
+   - Click "Deploy site"
+   - Your site will be live at `https://your-site-name.netlify.app`
 
-4. **Add Environment Variables**
-   - Go to "Variables" tab
-   - Add: `TINIFY_KEY` = `your_tinify_api_key`
-   - Add: `APP_MODE` = `online`
-   - Add: `NODE_ENV` = `production`
+3. **Custom Domain** (Optional):
+   - In Netlify dashboard, go to "Domain settings"
+   - Add your custom domain
 
-5. **Generate Domain**
-   - Go to "Settings" → "Networking"
-   - Click "Generate Domain"
-   - Your app is live!
+### Option 3: Run Locally for Development
+
+**Backend (Vercel Dev Server)**:
+
+```bash
+npm run dev:backend
+```
+
+This starts the Vercel development server on `http://localhost:3000`
+
+**Frontend (Netlify Dev Server)**:
+
+```bash
+npm run dev:frontend
+```
+
+This serves the frontend files from the `public/` directory
+
+**Traditional Local Server** (original method):
+
+```bash
+npm start
+```
+
+This runs the Express server with both frontend and backend together on `http://localhost:3000`
 
 ### Post-Deployment
 
@@ -190,19 +222,29 @@ If you're hosting publicly with your personal API key, consider adding usage lim
 
 ```
 image-compressor/
+├── api/                        # Vercel serverless functions (backend)
+│   ├── _utils/
+│   │   └── tinifyService.js   # Image compression service
+│   ├── compress.js            # Single image compression endpoint
+│   └── compress-batch.js      # Batch compression endpoint
 ├── src/
-│   ├── server.js           # Main application entry
 │   ├── modes/
-│   │   ├── online.js       # Web interface routes
-│   │   └── local.js        # Directory watcher
-│   └── services/
-│       └── tinifyService.js # Image compression logic
-├── public/
-│   ├── index.html          # Web UI
-│   ├── script.js           # Frontend logic
-│   └── style.css           # Styling
-├── uploads/                # Input directory (local mode)
-└── converted/              # Output directory (local mode)
+│   │   └── local.js           # Directory watcher (local mode)
+│   ├── services/
+│   │   └── tinifyService.js   # Service for local mode
+│   └── server.js              # Express server (for local dev)
+├── public/                     # Frontend (deployed to Netlify)
+│   ├── index.html             # Web UI
+│   ├── script.js              # Frontend logic
+│   ├── style.css              # Styling
+│   └── config.js              # API configuration
+├── files/
+│   ├── in/                    # Input directory (local mode)
+│   └── out/                   # Output directory (local mode)
+├── vercel.json                # Vercel configuration
+├── netlify.toml               # Netlify configuration
+└── package.json               # Dependencies and scripts
+
 ```
 
 ## Configuration Options
@@ -248,3 +290,7 @@ MIT License - feel free to use this project for your own purposes!
 **Built with ❤️ by [Jack Osei](https://jackosei.com)**
 
 Get the code: [GitHub Repository](https://github.com/jackosei/image-compressor)
+
+```
+
+```

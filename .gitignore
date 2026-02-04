@@ -3,11 +3,21 @@ node_modules/
 package-lock.json
 
 # Local Files
-uploads/*
-converted/*
+files/in/*
+files/out/*
+
+# Keep directory structure
+!files/in/.gitkeep
+!files/out/.gitkeep
 
 # Environment
 .env
+.env.local
+.env.production
+
+# Deployment
+.vercel
+.netlify
 
 # Notes
 planned.md

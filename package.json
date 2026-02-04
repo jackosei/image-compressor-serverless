@@ -1,13 +1,22 @@
 {
   "name": "image-compressor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Image compression tool with Netlify frontend and Vercel serverless backend",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "local-mode": "APP_MODE=local node src/server.js",
+    "dev:backend": "vercel dev",
+    "dev:frontend": "netlify dev",
+    "deploy:backend": "vercel --prod",
+    "deploy:frontend": "netlify deploy --prod"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "image-compression",
+    "tinify",
+    "serverless"
+  ],
+  "author": "Jack Osei",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -17,6 +26,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "multer": "^2.0.2",
+    "multiparty": "^4.2.3",
     "tinify": "^1.8.2"
   }
 }

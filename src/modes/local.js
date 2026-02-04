@@ -4,8 +4,8 @@ const fs = require("fs");
 const { compressFile } = require("../services/tinifyService");
 
 function startLocalMode() {
-  const uploadDir = path.resolve(__dirname, "../../uploads");
-  const convertedDir = path.resolve(__dirname, "../../converted");
+  const uploadDir = path.resolve(__dirname, "../../files/in");
+  const convertedDir = path.resolve(__dirname, "../../files/out");
 
   // Ensure directories exist
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });

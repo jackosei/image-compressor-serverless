@@ -1,0 +1,16 @@
+[build]
+  publish = "public"
+  command = "echo 'No build needed for static site'"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  command = "echo 'Serving static files from public directory'"
+  targetPort = 8888
+  publish = "public"

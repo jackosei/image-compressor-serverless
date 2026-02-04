@@ -1,3 +1,6 @@
+// API Configuration - can be overridden via window.API_BASE_URL
+const API_BASE_URL = window.API_BASE_URL || "";
+
 const uploadArea = document.getElementById("uploadArea");
 const fileInput = document.getElementById("fileInput");
 const formatSelect = document.getElementById("formatSelect");
@@ -233,7 +236,7 @@ async function uploadImage(file) {
   formData.append("format", formatSelect.value);
 
   try {
-    const response = await fetch("/api/compress", {
+    const response = await fetch(`${API_BASE_URL}/api/compress`, {
       method: "POST",
       body: formData,
     });
@@ -314,7 +317,7 @@ async function compressFileWithProgress(file, card, index) {
     formData.append("image", file);
     formData.append("format", formatSelect.value);
 
-    const response = await fetch("/api/compress", {
+    const response = await fetch(`${API_BASE_URL}/api/compress`, {
       method: "POST",
       body: formData,
     });
@@ -387,7 +390,7 @@ async function downloadAllAsZip() {
       formData.append("images", file);
     });
 
-    const response = await fetch("/api/compress-batch", {
+    const response = await fetch(`${API_BASE_URL}/api/compress-batch`, {
       method: "POST",
       body: formData,
     });
