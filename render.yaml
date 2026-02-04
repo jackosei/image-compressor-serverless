@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: image-compressor
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: APP_MODE
+        value: online
+      - key: TINIFY_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production

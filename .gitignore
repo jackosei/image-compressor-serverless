@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local Files
+uploads/*
+converted/*
+
+# Environment
+.env
+
+# Notes
+planned.md

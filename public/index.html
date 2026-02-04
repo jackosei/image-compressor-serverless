@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Compressor</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <!-- Beta Notice Banner -->
+    <div class="beta-banner">
+      <div class="beta-content">
+        <i data-lucide="flask-conical" style="width: 18px; height: 18px"></i>
+        <span>
+          <strong>Beta Version</strong> · Free tier limited to 5 compressions.
+          Want unlimited?
+          <a href="https://github.com/jackosei" target="_blank" rel="noopener"
+            >Get the code on GitHub</a
+          >
+          and run it yourself!
+        </span>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Navigation -->
+      <nav class="nav">
+        <a
+          href="https://github.com/jackosei/image-compressor"
+          target="_blank"
+          rel="noopener"
+          class="github-btn"
+        >
+          <i data-lucide="github"></i>
+          <span>View on GitHub</span>
+        </a>
+      </nav>
+
+      <header>
+        <h1>Image Compressor</h1>
+        <p>Smart resizing & compression powered by Tinify</p>
+      </header>
+
+      <main>
+        <div class="options-area">
+          <div class="format-label-wrapper">
+            <label for="formatSelect">Output Format:</label>
+            <button
+              type="button"
+              class="info-icon"
+              id="formatInfoBtn"
+              aria-label="Format information"
+            >
+              <i data-lucide="info"></i>
+            </button>
+          </div>
+          <select id="formatSelect">
+            <option value="original">Original</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/avif">AVIF</option>
+          </select>
+
+          <!-- Format Info Tooltip -->
+          <div class="format-tooltip" id="formatTooltip" hidden>
+            <div class="tooltip-header">
+              <h4>Choose Your Format</h4>
+              <button
+                type="button"
+                class="tooltip-close"
+                id="tooltipClose"
+                aria-label="Close"
+              >
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+            <div class="tooltip-content">
+              <div class="format-option">
+                <div class="format-name">
+                  <i
+                    data-lucide="file-image"
+                    style="width: 16px; height: 16px"
+                  ></i>
+                  <strong>Original</strong>
+                </div>
+                <p>
+                  Keeps the original format while compressing. Best for general
+                  use.
+                </p>
+              </div>
+
+              <div class="format-option">
+                <div class="format-name">
+                  <i data-lucide="image" style="width: 16px; height: 16px"></i>
+                  <strong>JPEG</strong>
+                </div>
+                <p>Best for photos. Small file size, wide compatibility.</p>
+              </div>
+
+              <div class="format-option">
+                <div class="format-name">
+                  <i data-lucide="image" style="width: 16px; height: 16px"></i>
+                  <strong>PNG</strong>
+                </div>
+                <p>
+                  Best for graphics, logos, transparency. Larger files but
+                  lossless quality.
+                </p>
+              </div>
+
+              <div class="format-option">
+                <div class="format-name">
+                  <i data-lucide="zap" style="width: 16px; height: 16px"></i>
+                  <strong>WebP</strong>
+                </div>
+                <p>Modern format. Smaller than JPEG/PNG. Great for web use.</p>
+              </div>
+
+              <div class="format-option">
+                <div class="format-name">
+                  <i
+                    data-lucide="sparkles"
+                    style="width: 16px; height: 16px"
+                  ></i>
+                  <strong>AVIF</strong>
+                </div>
+                <p>
+                  Newest format. Best compression but limited browser support.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+          <div class="icon"><i data-lucide="folder-open"></i></div>
+          <h3>Drag & drop your image here</h3>
+          <p>or <span class="browse-btn">browse files</span></p>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        </div>
+
+        <div class="status-area" id="statusArea" hidden>
+          <div class="loading" id="loading" hidden>
+            <div class="spinner"></div>
+            <p>Compressing...</p>
+          </div>
+
+          <div class="result" id="result" hidden>
+            <p>
+              <i
+                data-lucide="check-circle"
+                style="
+                  display: inline-block;
+                  vertical-align: middle;
+                  margin-right: 0.25rem;
+                "
+              ></i>
+              Compression Complete!
+            </p>
+            <a id="downloadLink" href="#" class="download-btn"
+              >Download Compressed Image</a
+            >
+            <button id="resetBtn" class="reset-btn">Compress Another</button>
+          </div>
+
+          <div class="error" id="error" hidden>
+            <p>
+              <i
+                data-lucide="x-circle"
+                style="
+                  display: inline-block;
+                  vertical-align: middle;
+                  margin-right: 0.25rem;
+                "
+              ></i>
+              <span id="errorMessage">Something went wrong.</span>
+            </p>
+            <button id="retryBtn" class="reset-btn">Try Again</button>
+          </div>
+        </div>
+
+        <!-- Batch processing area -->
+        <div class="batch-area" id="batchArea" hidden>
+          <h3>Processing Files</h3>
+          <div class="batch-progress" id="batchProgress"></div>
+
+          <div class="batch-actions" id="batchActions" hidden>
+            <button id="downloadAllBtn" class="download-all-btn">
+              <i
+                data-lucide="package"
+                style="
+                  display: inline-block;
+                  vertical-align: middle;
+                  margin-right: 0.5rem;
+                "
+              ></i>
+              Download All as ZIP
+            </button>
+            <button id="batchResetBtn" class="reset-btn">Compress More</button>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          Built with
+          <i
+            data-lucide="heart"
+            style="
+              display: inline-block;
+              vertical-align: middle;
+              color: #ef4444;
+              fill: #ef4444;
+            "
+          ></i>
+          by <a href="https://jackosei.com">Jack Osei</a>, using Node.js &
+          Tinify API
+        </p>
+        <p class="legal-links">
+          <a href="#" id="privacyLink">Privacy Policy</a> ·
+          <a href="#" id="termsLink">Terms of Service</a>
+        </p>
+      </footer>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal" id="privacyModal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Privacy Policy</h2>
+          <button class="modal-close" id="privacyClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="last-updated">Last Updated: February 2026</p>
+
+          <h3>1. Introduction</h3>
+          <p>
+            Welcome to Image Compressor. We are committed to protecting your
+            privacy and ensuring transparency about how we handle your data.
+            This Privacy Policy explains what information we collect, how we use
+            it, and your rights regarding your data.
+          </p>
+
+          <h3>2. Information We Collect</h3>
+          <p><strong>Images You Upload:</strong></p>
+          <ul>
+            <li>
+              When you use our service, you upload image files for compression
+            </li>
+            <li>
+              We temporarily process these images through our server and the
+              Tinify API
+            </li>
+            <li>We do not store your images permanently on our servers</li>
+          </ul>
+
+          <p><strong>Technical Data:</strong></p>
+          <ul>
+            <li>File metadata (filename, file size, format)</li>
+            <li>Server logs for error tracking and service improvement</li>
+            <li>No cookies or tracking technologies are used</li>
+          </ul>
+
+          <h3>3. How We Use Your Data</h3>
+          <p>We use your images solely for the following purposes:</p>
+          <ul>
+            <li>
+              <strong>Compression:</strong> Processing your images through the
+              Tinify API to reduce file size
+            </li>
+            <li>
+              <strong>Format Conversion:</strong> Converting images to your
+              selected format (JPEG, PNG, WebP, AVIF)
+            </li>
+            <li>
+              <strong>Service Delivery:</strong> Returning the compressed images
+              to you
+            </li>
+          </ul>
+
+          <p>We do NOT:</p>
+          <ul>
+            <li>Store your images permanently</li>
+            <li>Use your images for training AI models</li>
+            <li>
+              Share your images with third parties (except Tinify for
+              processing)
+            </li>
+            <li>Analyze the content of your images</li>
+          </ul>
+
+          <h3>4. Third-Party Services</h3>
+          <p><strong>Tinify API:</strong></p>
+          <p>
+            We use the Tinify API (TinyPNG/TinyJPG) for image compression. When
+            you upload an image, it is sent to Tinify's servers for processing.
+            Tinify's privacy practices are governed by their own privacy policy.
+            We recommend reviewing
+            <a href="https://tinypng.com/terms" target="_blank" rel="noopener"
+              >Tinify's Privacy Policy</a
+            >.
+          </p>
+
+          <h3>5. Data Storage and Retention</h3>
+          <ul>
+            <li>
+              <strong>Temporary Storage:</strong> Images are temporarily stored
+              in memory during processing
+            </li>
+            <li>
+              <strong>Automatic Deletion:</strong> Images are automatically
+              deleted after download or when the session ends
+            </li>
+            <li>
+              <strong>Server Logs:</strong> Technical logs are retained for up
+              to 30 days for debugging and security purposes
+            </li>
+          </ul>
+
+          <h3>6. Data Security</h3>
+          <p>
+            We implement appropriate security measures to protect your data
+            during transmission and processing:
+          </p>
+          <ul>
+            <li>
+              HTTPS encryption for data transmission (when deployed with SSL)
+            </li>
+            <li>Secure API communication with Tinify</li>
+            <li>No permanent storage of user images</li>
+            <li>Regular security reviews and updates</li>
+          </ul>
+
+          <h3>7. Your Rights</h3>
+          <p>You have the right to:</p>
+          <ul>
+            <li>
+              <strong>Access:</strong> Request information about data we process
+            </li>
+            <li>
+              <strong>Deletion:</strong> Images are automatically deleted after
+              processing
+            </li>
+            <li>
+              <strong>Objection:</strong> Stop using the service at any time
+            </li>
+            <li>
+              <strong>Data Portability:</strong> Download your compressed images
+            </li>
+          </ul>
+
+          <h3>8. Children's Privacy</h3>
+          <p>
+            Our service is not directed to children under 13 years of age. We do
+            not knowingly collect personal information from children under 13.
+          </p>
+
+          <h3>9. International Data Transfers</h3>
+          <p>
+            Your images may be processed on servers located in different
+            countries depending on Tinify's infrastructure. By using our
+            service, you consent to this transfer.
+          </p>
+
+          <h3>10. Changes to This Policy</h3>
+          <p>
+            We may update this Privacy Policy from time to time. The "Last
+            Updated" date at the top indicates when the policy was last revised.
+            We encourage you to review this policy periodically.
+          </p>
+
+          <h3>11. Contact Us</h3>
+          <p>
+            If you have questions about this Privacy Policy or our data
+            practices, please contact us at:
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:privacy@jackosei.com">privacy@jackosei.com</a>
+          </p>
+          <p>
+            <strong>Website:</strong>
+            <a href="https://jackosei.com" target="_blank">jackosei.com</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Limit Reached Modal -->
+    <div class="modal" id="limitModal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Free Limit Reached</h2>
+          <button class="modal-close" id="limitClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="text-align: center; margin-bottom: 2rem">
+            <i
+              data-lucide="zap-off"
+              style="
+                width: 64px;
+                height: 64px;
+                color: var(--primary);
+                margin-bottom: 1rem;
+              "
+            ></i>
+            <h3 style="margin-bottom: 0.5rem">
+              You've Used Your 5 Free Compressions
+            </h3>
+            <p style="color: var(--text-muted)">
+              To protect my limited API credits, the free tier is capped at 5
+              compressions.
+            </p>
+          </div>
+
+          <div
+            style="
+              background: rgba(59, 130, 246, 0.1);
+              border: 1px solid rgba(59, 130, 246, 0.3);
+              border-radius: 0.75rem;
+              padding: 1.5rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h4
+              style="
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              "
+            >
+              <i
+                data-lucide="rocket"
+                style="width: 20px; height: 20px; color: var(--primary)"
+              ></i>
+              Want Unlimited Compressions?
+            </h4>
+            <p style="margin-bottom: 1rem">
+              Run this app on your own system with your own Tinify API key!
+            </p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem">
+              <li>
+                ✨ <strong>500 free compressions/month</strong> from TinyPNG
+              </li>
+              <li>
+                🚀 <strong>Unlimited batch processing</strong> - no restrictions
+              </li>
+              <li>
+                💾 <strong>Process locally</strong> - your images never leave
+                your computer
+              </li>
+              <li>🔧 <strong>Open source</strong> - customize as you want</li>
+            </ul>
+          </div>
+
+          <h4 style="margin-bottom: 1rem">Quick Setup (5 minutes):</h4>
+          <ol style="margin-left: 1.5rem; line-height: 1.8">
+            <li>
+              <strong>Get the code:</strong> Visit
+              <a
+                href="https://github.com/jackosei/image-compressor"
+                target="_blank"
+                rel="noopener"
+                style="color: var(--primary)"
+              >
+                GitHub Repository
+              </a>
+            </li>
+            <li>
+              <strong>Get free API key:</strong> Sign up at
+              <a
+                href="https://tinypng.com/developers"
+                target="_blank"
+                rel="noopener"
+                style="color: var(--primary)"
+              >
+                TinyPNG Developers
+              </a>
+              (500 compressions/month free)
+            </li>
+            <li>
+              <strong>Clone & install:</strong> Follow the README instructions
+            </li>
+            <li>
+              <strong>Add your API key:</strong> Create <code>.env</code> file
+              with your key
+            </li>
+            <li>
+              <strong>Run locally:</strong> <code>npm start</code> and enjoy
+              unlimited use!
+            </li>
+          </ol>
+
+          <div style="margin-top: 2rem; text-align: center">
+            <a
+              href="https://github.com/jackosei/image-compressor"
+              target="_blank"
+              rel="noopener"
+              class="download-btn"
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-decoration: none;
+              "
+            >
+              <i data-lucide="github" style="width: 20px; height: 20px"></i>
+              View Repository on GitHub
+            </a>
+          </div>
+
+          <p
+            style="
+              margin-top: 1.5rem;
+              text-align: center;
+              font-size: 0.875rem;
+              color: var(--text-muted);
+            "
+          >
+            Need help? Check the
+            <a
+              href="https://github.com/jackosei/image-compressor#readme"
+              target="_blank"
+              rel="noopener"
+              style="color: var(--primary)"
+            >
+              README
+            </a>
+            for detailed setup instructions.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div class="modal" id="termsModal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Terms of Service</h2>
+          <button class="modal-close" id="termsClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="last-updated">Last Updated: February 2026</p>
+
+          <h3>1. Acceptance of Terms</h3>
+          <p>
+            By accessing and using Image Compressor ("the Service"), you accept
+            and agree to be bound by these Terms of Service. If you do not agree
+            to these terms, please do not use the Service.
+          </p>
+
+          <h3>2. Description of Service</h3>
+          <p>
+            Image Compressor is a web-based tool that allows users to compress
+            and convert image files. The Service uses the Tinify API to process
+            images and reduce file sizes while maintaining visual quality.
+          </p>
+
+          <h3>3. User Responsibilities</h3>
+          <p>You agree to:</p>
+          <ul>
+            <li>
+              <strong>Legal Rights:</strong> Only upload images you own or have
+              the right to process
+            </li>
+            <li>
+              <strong>Lawful Use:</strong> Use the Service only for lawful
+              purposes
+            </li>
+            <li>
+              <strong>No Harmful Content:</strong> Not upload illegal,
+              offensive, or malicious content
+            </li>
+            <li>
+              <strong>Reasonable Use:</strong> Not abuse or overload the Service
+            </li>
+            <li>
+              <strong>No Automation:</strong> Not use bots or automated tools
+              without permission
+            </li>
+          </ul>
+
+          <h3>4. Prohibited Uses</h3>
+          <p>You may NOT use this Service to:</p>
+          <ul>
+            <li>
+              Upload images containing illegal content (e.g., child
+              exploitation, violence)
+            </li>
+            <li>Process copyrighted images without authorization</li>
+            <li>Violate any applicable laws or regulations</li>
+            <li>Attempt to hack, disrupt, or damage the Service</li>
+            <li>Circumvent usage limits or restrictions</li>
+            <li>Resell or commercialize the Service without authorization</li>
+          </ul>
+
+          <h3>5. Intellectual Property</h3>
+          <p><strong>Your Content:</strong></p>
+          <ul>
+            <li>You retain all rights to the images you upload</li>
+            <li>
+              You grant us a temporary license to process your images through
+              the Service
+            </li>
+            <li>
+              This license ends when your images are deleted from our servers
+            </li>
+          </ul>
+
+          <p><strong>Our Service:</strong></p>
+          <ul>
+            <li>
+              The Service, including its design, code, and functionality, is
+              owned by Jack Osei
+            </li>
+            <li>You may not copy, modify, or reverse engineer the Service</li>
+          </ul>
+
+          <h3>6. Service Limitations</h3>
+          <p>Please be aware:</p>
+          <ul>
+            <li><strong>File Size Limit:</strong> Maximum 10MB per image</li>
+            <li>
+              <strong>Batch Limit:</strong> Maximum 20 images per batch upload
+            </li>
+            <li>
+              <strong>API Limits:</strong> Compression is subject to Tinify API
+              rate limits
+            </li>
+            <li>
+              <strong>Availability:</strong> Service may be unavailable during
+              maintenance or outages
+            </li>
+            <li>
+              <strong>No Guarantee:</strong> We do not guarantee 100% uptime or
+              availability
+            </li>
+          </ul>
+
+          <h3>7. Disclaimer of Warranties</h3>
+          <p>
+            THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND,
+            EITHER EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT:
+          </p>
+          <ul>
+            <li>The Service will meet your requirements</li>
+            <li>The Service will be uninterrupted, timely, or error-free</li>
+            <li>Compressed images will meet your quality expectations</li>
+            <li>Any errors in the Service will be corrected</li>
+          </ul>
+
+          <h3>8. Limitation of Liability</h3>
+          <p>
+            TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR:
+          </p>
+          <ul>
+            <li>Loss of data, images, or profits</li>
+            <li>Indirect, incidental, or consequential damages</li>
+            <li>Service interruptions or errors</li>
+            <li>Third-party actions (including Tinify API issues)</li>
+          </ul>
+          <p>
+            Our total liability shall not exceed the amount you paid to use the
+            Service (currently $0 for free tier).
+          </p>
+
+          <h3>9. Indemnification</h3>
+          <p>
+            You agree to indemnify and hold harmless Jack Osei and Image
+            Compressor from any claims, damages, or expenses arising from:
+          </p>
+          <ul>
+            <li>Your use of the Service</li>
+            <li>Your violation of these Terms</li>
+            <li>Your violation of any third-party rights</li>
+            <li>Your uploaded content</li>
+          </ul>
+
+          <h3>10. Third-Party Services</h3>
+          <p>
+            The Service relies on Tinify API for image compression. Your use of
+            the Service is also subject to
+            <a href="https://tinypng.com/terms" target="_blank" rel="noopener"
+              >Tinify's Terms of Service</a
+            >. We are not responsible for Tinify's actions or service
+            availability.
+          </p>
+
+          <h3>11. Modifications to Service</h3>
+          <p>
+            We reserve the right to modify or discontinue the Service at any
+            time, with or without notice. We shall not be liable for any
+            modification, suspension, or discontinuation of the Service.
+          </p>
+
+          <h3>12. Termination</h3>
+          <p>
+            We may terminate or suspend your access to the Service immediately,
+            without prior notice, for any reason, including:
+          </p>
+          <ul>
+            <li>Violation of these Terms</li>
+            <li>Abusive or illegal behavior</li>
+            <li>At our sole discretion</li>
+          </ul>
+
+          <h3>13. Governing Law</h3>
+          <p>
+            These Terms shall be governed by and construed in accordance with
+            the laws of your jurisdiction, without regard to its conflict of law
+            provisions.
+          </p>
+
+          <h3>14. Dispute Resolution</h3>
+          <p>
+            Any disputes arising from these Terms or the Service shall be
+            resolved through good-faith negotiation. If negotiation fails,
+            disputes may be subject to binding arbitration or court proceedings
+            as applicable by law.
+          </p>
+
+          <h3>15. Severability</h3>
+          <p>
+            If any provision of these Terms is found to be unenforceable or
+            invalid, that provision shall be limited or eliminated to the
+            minimum extent necessary, and the remaining provisions shall remain
+            in full force and effect.
+          </p>
+
+          <h3>16. Entire Agreement</h3>
+          <p>
+            These Terms constitute the entire agreement between you and Image
+            Compressor regarding the Service and supersede all prior agreements.
+          </p>
+
+          <h3>17. Contact Information</h3>
+          <p>For questions about these Terms of Service, please contact:</p>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:legal@jackosei.com">legal@jackosei.com</a>
+          </p>
+          <p>
+            <strong>Website:</strong>
+            <a href="https://jackosei.com" target="_blank">jackosei.com</a>
+          </p>
+
+          <hr
+            style="
+              margin: 2rem 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.1);
+            "
+          />
+
+          <p
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              font-size: 0.875rem;
+            "
+          >
+            By using Image Compressor, you acknowledge that you have read,
+            understood, and agree to be bound by these Terms of Service.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize Lucide icons
+      document.addEventListener("DOMContentLoaded", () => {
+        lucide.createIcons();
+      });
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
