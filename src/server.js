@@ -11,8 +11,26 @@ const MODE = process.env.APP_MODE || "online";
 
 // Middleware
 app.use(cors());
-app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.json());
+
+// Dynamic config.js endpoint - serves API URL from environment
+// For local dev, always uses same origin (empty string)
+// For production testing, can override with API_BASE_URL env var
+app.get("/config.js", (req, res) => {
+  // Default to empty (same origin) for local development
+  // Can be overridden with API_BASE_URL env var if needed
+  const apiBaseUrl = process.env.API_BASE_URL || "";
+  res.setHeader("Content-Type", "application/javascript");
+  res.send(
+    `
+// API Configuration - dynamically generated from environment
+window.API_BASE_URL = "${apiBaseUrl}";
+  `.trim(),
+  );
+});
+
+// Static files (after config.js route so it takes precedence)
+app.use(express.static(path.join(__dirname, "../public")));
 
 // Routes
 app.use("/api", onlineRouter);
@@ -34,4 +52,5 @@ if (MODE === "local") {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`API Base URL: ${process.env.API_BASE_URL || "(same origin)"}`);
 });
