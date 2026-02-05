@@ -263,6 +263,16 @@ async function uploadImage(file) {
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
 
+    // Extract filename from Content-Disposition header
+    const contentDisposition = response.headers.get("Content-Disposition");
+    let filename = `compressed_${file.name}`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+    }
+
     // Increment compression count on success
     incrementCompressionCount();
 
@@ -270,7 +280,7 @@ async function uploadImage(file) {
     result.hidden = false;
 
     downloadLink.href = url;
-    downloadLink.download = `compressed_${file.name}`;
+    downloadLink.download = filename; // Use server-provided filename
   } catch (err) {
     loading.hidden = true;
     error.hidden = false;
