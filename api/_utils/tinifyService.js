@@ -27,10 +27,8 @@ async function compressImageBuffer(buffer, format) {
     if (format && format !== "original") {
       // Tinify expects full MIME types: 'image/webp', 'image/jpeg', 'image/png', 'image/avif'
       result = source.convert({ type: format });
-      console.log(`Converting to format: ${format}`);
     } else {
       result = source;
-      console.log("Maintaining original format");
     }
 
     const bufferResult = await result.toBuffer();

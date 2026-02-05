@@ -21,13 +21,11 @@ router.post("/compress", upload.single("image"), async (req, res) => {
       `Received upload: ${req.file.originalname} (${req.file.size} bytes)`,
     );
     const targetFormat = req.body.format || "original";
-    console.log(`Converting to: ${targetFormat}`);
 
     const compressedBuffer = await compressImageBuffer(
       req.file.buffer,
       targetFormat,
     );
-    console.log(`Compressed successfully.`);
 
     // Determine content type and extension
     let mimeType = req.file.mimetype;

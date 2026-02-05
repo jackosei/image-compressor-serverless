@@ -50,7 +50,6 @@ module.exports = async (req, res) => {
       console.log(
         `Received upload: ${file.originalFilename} (${file.size} bytes)`,
       );
-      console.log(`Converting to: ${targetFormat}`);
 
       // Read file buffer
       const fs = require("fs");
@@ -61,7 +60,6 @@ module.exports = async (req, res) => {
         fileBuffer,
         targetFormat,
       );
-      console.log(`Compressed successfully.`);
 
       // Clean up temp file
       fs.unlinkSync(file.path);
