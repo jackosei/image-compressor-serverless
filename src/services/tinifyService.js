@@ -26,9 +26,12 @@ async function compressImageBuffer(buffer, format) {
     let result;
 
     if (format && format !== "original") {
+      // Tinify expects full MIME types: 'image/webp', 'image/jpeg', 'image/png', 'image/avif'
       result = source.convert({ type: format });
+      console.log(`Converting to format: ${format}`);
     } else {
       result = source;
+      console.log("Maintaining original format");
     }
 
     const bufferResult = await result.toBuffer();
@@ -53,7 +56,9 @@ async function compressFile(sourcePath, destPath, format) {
     let result;
 
     if (format && format !== "original") {
+      // Tinify expects full MIME types
       result = source.convert({ type: format });
+      console.log(`Converting ${sourcePath} to format: ${format}`);
     } else {
       result = source;
     }

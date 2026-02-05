@@ -14,7 +14,7 @@ function initTinify() {
 /**
  * Compress an image from a buffer.
  * @param {Buffer} buffer - The image buffer.
- * @param {string} [format] - Target format (e.g., 'image/png', 'image/webp', 'png', 'webp'). If not provided, maintains original format.
+ * @param {string} [format] - Target format (e.g., 'image/png', 'image/webp'). If not provided, maintains original format.
  * @returns {Promise<Buffer>} - The compressed image buffer.
  */
 async function compressImageBuffer(buffer, format) {
@@ -25,15 +25,9 @@ async function compressImageBuffer(buffer, format) {
     let result;
 
     if (format && format !== "original") {
-      // Convert MIME type to Tinify format (remove 'image/' prefix if present)
-      const tinifyFormat = format.startsWith("image/")
-        ? format.replace("image/", "")
-        : format;
-
-      // Tinify supports: jpeg, png, webp
-      // Note: AVIF support may be limited
-      result = source.convert({ type: tinifyFormat });
-      console.log(`Converting to format: ${tinifyFormat}`);
+      // Tinify expects full MIME types: 'image/webp', 'image/jpeg', 'image/png', 'image/avif'
+      result = source.convert({ type: format });
+      console.log(`Converting to format: ${format}`);
     } else {
       result = source;
       console.log("Maintaining original format");
