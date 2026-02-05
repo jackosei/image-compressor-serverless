@@ -28,25 +28,36 @@
       </div>
     </div>
 
+    <!-- Header with Logo -->
+    <header class="site-header">
+      <div class="header-container">
+        <div class="header-content">
+          <div class="logo-area">
+            <div class="logo-container">
+              <img src="lilpic-logo.svg" alt="LilPic Logo" class="logo" />
+            </div>
+            <div class="header-text">
+              <h1>LilPic Image Compressor</h1>
+              <p>Smart resizing & compression powered by Tinify</p>
+            </div>
+          </div>
+
+          <nav class="header-nav">
+            <a
+              href="https://github.com/jackosei/image-compressor"
+              target="_blank"
+              rel="noopener"
+              class="github-btn"
+            >
+              <i data-lucide="github"></i>
+              <span>View on GitHub</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
     <div class="container">
-      <!-- Navigation -->
-      <nav class="nav">
-        <a
-          href="https://github.com/jackosei/image-compressor"
-          target="_blank"
-          rel="noopener"
-          class="github-btn"
-        >
-          <i data-lucide="github"></i>
-          <span>View on GitHub</span>
-        </a>
-      </nav>
-
-      <header>
-        <h1>Image Compressor</h1>
-        <p>Smart resizing & compression powered by Tinify</p>
-      </header>
-
       <main>
         <div class="options-area">
           <div class="format-label-wrapper">
@@ -207,28 +218,84 @@
           </div>
         </div>
       </main>
-
-      <footer>
-        <p>
-          Built with
-          <i
-            data-lucide="heart"
-            style="
-              display: inline-block;
-              vertical-align: middle;
-              color: #ef4444;
-              fill: #ef4444;
-            "
-          ></i>
-          by <a href="https://jackosei.com">Jack Osei</a>, using Node.js &
-          Tinify API
-        </p>
-        <p class="legal-links">
-          <a href="#" id="privacyLink">Privacy Policy</a> ·
-          <a href="#" id="termsLink">Terms of Service</a>
-        </p>
-      </footer>
     </div>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-content">
+          <div class="footer-main">
+            <div class="footer-logo">
+              <img src="lilpic-logo.svg" alt="LilPic" class="footer-logo-img" />
+            </div>
+            <p class="footer-tagline">
+              Smart image compression for developers and designers
+            </p>
+          </div>
+          <div class="footer-links">
+            <div class="footer-section">
+              <h4>Product</h4>
+              <a
+                href="https://github.com/jackosei/image-compressor"
+                target="_blank"
+                rel="noopener"
+              >
+                <i data-lucide="github" style="width: 14px; height: 14px"></i>
+                GitHub
+              </a>
+              <a
+                href="https://github.com/jackosei/image-compressor#readme"
+                target="_blank"
+                rel="noopener"
+              >
+                <i
+                  data-lucide="book-open"
+                  style="width: 14px; height: 14px"
+                ></i>
+                Documentation
+              </a>
+            </div>
+            <div class="footer-section">
+              <h4>Legal</h4>
+              <a href="#" id="privacyLink">Privacy Policy</a>
+              <a href="#" id="termsLink">Terms of Service</a>
+            </div>
+            <div class="footer-section">
+              <h4>Connect</h4>
+              <a href="https://jackosei.com" target="_blank" rel="noopener"
+                >Portfolio</a
+              >
+              <a
+                href="https://github.com/jackosei"
+                target="_blank"
+                rel="noopener"
+                >GitHub Profile</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            Built with
+            <i
+              data-lucide="heart"
+              style="
+                display: inline-block;
+                vertical-align: middle;
+                color: #ef4444;
+                fill: #ef4444;
+                width: 14px;
+                height: 14px;
+              "
+            ></i>
+            by
+            <a href="https://jackosei.com" target="_blank" rel="noopener"
+              >Jack Osei</a
+            >
+          </p>
+          <p class="copyright">© 2026 LilPic. Powered by Tinify API.</p>
+        </div>
+      </div>
+    </footer>
 
     <!-- Privacy Policy Modal -->
     <div class="modal" id="privacyModal" hidden>
