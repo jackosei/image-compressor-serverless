@@ -92,7 +92,7 @@ The web interface supports both single and batch image compression:
 
 **Batch Processing:**
 
-1. Select multiple images (up to 20)
+1. Select multiple images (up to 5)
 2. Watch real-time compression progress for each file
 3. Download individually or all files as ZIP
 
@@ -259,8 +259,8 @@ image-compressor/
 ## API Limits
 
 - **Free Tier**: 500 compressions/month
-- **Batch Limit**: 20 images per batch
-- **File Size**: Maximum 10MB per image
+- **Batch Limit**: 5 images per batch
+- **File Size**: Maximum 4MB per image
 - **Supported Formats**: JPEG, PNG, WebP
 
 ## FAQ
@@ -271,7 +271,7 @@ A: To protect my personal API credits while offering a free demo.
 **Q: How do I get unlimited compressions?**
 A: Clone this repo, get your own free Tinify API key, and run it locally!
 
-**Q: Can I process more than 20 images at once?**
+**Q: Can I process more than 5 images at once?**
 A: When running locally, you can modify the batch limit in `src/modes/online.js`.
 
 **Q: Is my data safe?**
