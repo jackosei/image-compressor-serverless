@@ -223,7 +223,13 @@ function handleFiles(files) {
     return;
   }
 
-  // Check compression limit
+  // Enforce 5-file limit per batch
+  if (imageFiles.length > 5) {
+    showLimitModal();
+    return;
+  }
+
+  // Check compression limit based on total usage
   if (!checkCompressionLimit()) {
     showLimitModal();
     return;
@@ -302,6 +308,13 @@ async function processBatch(files) {
 
   // Process files sequentially to show progress
   for (let i = 0; i < files.length; i++) {
+    // Double check limit before processing each file
+    // This handles the case where user uploads multiple batches that cumulatively exceed limit
+    if (!checkCompressionLimit()) {
+      showLimitModal();
+      break;
+    }
+
     const file = files[i];
     const card = batchProgress.children[i];
     await compressFileWithProgress(file, card, i);
