@@ -58,9 +58,17 @@ router.post("/compress", upload.single("image"), async (req, res) => {
 });
 
 // Batch compress endpoint - handles multiple files and returns ZIP
-router.post("/compress-batch", upload.array("images", 20), async (req, res) => {
+// Limit to 5 files for free tier consistency
+router.post("/compress-batch", upload.array("images", 5), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: "No image files provided." });
+  }
+
+  // Double check length just in case middleware doesn't catch it
+  if (req.files.length > 5) {
+    return res
+      .status(400)
+      .json({ error: "Free tier limited to 5 images per batch." });
   }
 
   try {

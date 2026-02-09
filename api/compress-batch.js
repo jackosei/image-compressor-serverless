@@ -32,8 +32,8 @@ module.exports = async (req, res) => {
   try {
     // Parse multipart form data with size limits
     const form = new multiparty.Form({
-      maxFiles: 20,
-      maxFilesSize: 20 * 1024 * 1024, // 20MB total (max ~5 images at 4MB each)
+      maxFiles: 5, // Strict limit: 5 files max
+      maxFilesSize: 20 * 1024 * 1024, // 20MB total (avg 4MB per file)
     });
 
     form.parse(req, async (err, fields, files) => {
@@ -45,6 +45,13 @@ module.exports = async (req, res) => {
       // Check if images were provided
       if (!files.images || files.images.length === 0) {
         return res.status(400).json({ error: "No image files provided." });
+      }
+
+      // Enforce file count limit explicitly
+      if (files.images.length > 5) {
+        return res
+          .status(400)
+          .json({ error: "Free tier limited to 5 images per batch." });
       }
 
       const targetFormat = fields.format ? fields.format[0] : "original";
