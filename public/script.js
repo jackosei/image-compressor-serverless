@@ -194,7 +194,22 @@ function incrementCompressionCount() {
   localStorage.setItem("compressions_used", compressionsUsed.toString());
 }
 
-function showLimitModal() {
+function showLimitModal(reason = "usage") {
+  const modalTitle = document.querySelector("#limitModal h3");
+  const modalDescription = document.querySelector(
+    "#limitModal .modal-body > div > p",
+  );
+
+  if (reason === "batch") {
+    modalTitle.textContent = "Batch Upload Limit: 5 Files Maximum";
+    modalDescription.textContent =
+      "You can compress up to 5 images at a time. Please select fewer files and try again.";
+  } else {
+    modalTitle.textContent = "You've Used Your 5 Free Compressions";
+    modalDescription.textContent =
+      "To protect my limited API credits, the free tier is capped at 5 compressions.";
+  }
+
   limitModal.hidden = false;
   document.body.style.overflow = "hidden";
   lucide.createIcons();
@@ -225,7 +240,7 @@ function handleFiles(files) {
 
   // Enforce 5-file limit per batch
   if (imageFiles.length > 5) {
-    showLimitModal();
+    showLimitModal("batch");
     return;
   }
 
