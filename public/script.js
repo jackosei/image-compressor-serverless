@@ -266,6 +266,7 @@ function handleFiles(files) {
 
 // Single file upload (original functionality)
 async function uploadImage(file) {
+  const originalSize = file.size;
   const formData = new FormData();
   formData.append("image", file);
   formData.append("format", formatSelect.value);
@@ -283,6 +284,13 @@ async function uploadImage(file) {
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
+    const compressedSize = blob.size;
+
+    // Calculate size reduction
+    const reduction = (
+      ((originalSize - compressedSize) / originalSize) *
+      100
+    ).toFixed(1);
 
     // Extract filename from Content-Disposition header
     const contentDisposition = response.headers.get("Content-Disposition");
@@ -299,6 +307,11 @@ async function uploadImage(file) {
 
     loading.hidden = true;
     result.hidden = false;
+
+    // Update result paragraph to show size information
+    const resultText = result.querySelector("p");
+    resultText.innerHTML = `<i data-lucide="check-circle" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;"></i> Compression Complete!<br><span class="size-comparison" style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem; display: inline-block;">${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (<span style="color: #22c55e; font-weight: 600;">${reduction}% smaller</span>)</span>`;
+    lucide.createIcons();
 
     downloadLink.href = url;
     downloadLink.download = filename; // Use server-provided filename
@@ -342,6 +355,7 @@ async function processBatch(files) {
 function createProgressCard(file) {
   const card = document.createElement("div");
   card.className = "file-progress-card";
+  card.dataset.originalSize = file.size;
   card.innerHTML = `
     <div class="file-info">
       <span class="file-name">${file.name}</span>
@@ -358,6 +372,7 @@ function createProgressCard(file) {
 async function compressFileWithProgress(file, card, index) {
   const statusElement = card.querySelector(".file-status");
   const progressFill = card.querySelector(".progress-fill");
+  const originalSize = parseInt(card.dataset.originalSize);
 
   try {
     // Update status
@@ -380,6 +395,13 @@ async function compressFileWithProgress(file, card, index) {
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
+    const compressedSize = blob.size;
+
+    // Calculate size reduction
+    const reduction = (
+      ((originalSize - compressedSize) / originalSize) *
+      100
+    ).toFixed(1);
 
     // Determine file extension
     let ext = file.name.split(".").pop();
@@ -401,9 +423,9 @@ async function compressFileWithProgress(file, card, index) {
     // Increment compression count on success
     incrementCompressionCount();
 
-    // Update status to complete
+    // Update status to complete with size information
     progressFill.style.width = "100%";
-    statusElement.innerHTML = `<i data-lucide="check-circle" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem; width: 16px; height: 16px; color: #22c55e;"></i> Complete <a href="${url}" download="${fileName}" class="download-link">Download</a>`;
+    statusElement.innerHTML = `<i data-lucide="check-circle" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem; width: 16px; height: 16px; color: #22c55e;"></i> Complete <span class="size-comparison">${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (<span style="color: #22c55e; font-weight: 600;">${reduction}% smaller</span>)</span> <a href="${url}" download="${fileName}" class="download-link">Download</a>`;
     card.classList.remove("processing");
     card.classList.add("completed");
     // Re-initialize icons for the newly added element
