@@ -454,27 +454,15 @@ async function downloadAllAsZip() {
     batchResetBtn.disabled = true;
     downloadAllBtn.textContent = "Creating ZIP...";
 
-    // Create FormData with all original files
-    const formData = new FormData();
-    formData.append("format", formatSelect.value);
+    // Build ZIP client-side from already-compressed blobs
+    const zip = new JSZip();
 
-    // Get original files from file input
-    const files = Array.from(fileInput.files);
-    files.forEach((file) => {
-      formData.append("images", file);
-    });
-
-    const response = await fetch(`${API_BASE_URL}/api/compress-batch`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to create ZIP file");
+    for (const file of compressedFiles) {
+      zip.file(file.fileName, file.blob);
     }
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
 
     // Trigger download
     const a = document.createElement("a");
