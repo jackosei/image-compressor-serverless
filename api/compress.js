@@ -1,5 +1,6 @@
 const multiparty = require("multiparty");
 const { compressImageBuffer } = require("./_utils/tinifyService");
+const { notifyError } = require("./_utils/errorNotifier");
 const path = require("path");
 
 module.exports = async (req, res) => {
@@ -36,6 +37,12 @@ module.exports = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error("Form parse error:", err);
+        notifyError({
+          endpoint: "/api/compress",
+          message: err.message,
+          stack: err.stack,
+          meta: { phase: "form-parse" },
+        });
         return res.status(400).json({ error: "Failed to parse form data." });
       }
 
@@ -91,6 +98,12 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error("Compression failed:", error);
+    notifyError({
+      endpoint: "/api/compress",
+      message: error.message,
+      stack: error.stack,
+      meta: { phase: "compression" },
+    });
     res.status(500).json({ error: "Image compression failed." });
   }
 };

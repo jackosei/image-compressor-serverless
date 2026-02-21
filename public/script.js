@@ -320,6 +320,10 @@ async function uploadImage(file) {
     error.hidden = false;
     errorMessage.textContent = err.message;
     console.error(err);
+    reportError(err.message, "uploadImage", {
+      fileName: file.name,
+      format: formatSelect.value,
+    });
   }
 }
 
@@ -438,6 +442,11 @@ async function compressFileWithProgress(file, card, index) {
     card.classList.remove("processing");
     card.classList.add("error");
     console.error(`Error compressing ${file.name}:`, err);
+    reportError(err.message, "compressFileWithProgress", {
+      fileName: file.name,
+      format: formatSelect.value,
+      index,
+    });
     // Re-initialize icons for the newly added element
     lucide.createIcons();
   }
@@ -486,6 +495,9 @@ async function downloadAllAsZip() {
       '<i data-lucide="package" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"></i>Download All as ZIP';
     lucide.createIcons();
     console.error(err);
+    reportError(err.message, "downloadAllAsZip", {
+      fileCount: compressedFiles.length,
+    });
   }
 }
 
@@ -495,4 +507,15 @@ function formatFileSize(bytes) {
   const sizes = ["Bytes", "KB", "MB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+}
+
+// Fire-and-forget error reporter — sends frontend errors to the backend for email notification
+function reportError(message, source, context) {
+  fetch(`${API_BASE_URL}/api/report-error`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, source, context }),
+  }).catch(() => {
+    // Silently ignore — error reporting should never break the app
+  });
 }

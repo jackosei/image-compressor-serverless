@@ -1,6 +1,7 @@
 const multiparty = require("multiparty");
 const archiver = require("archiver");
 const { compressImageBuffer } = require("./_utils/tinifyService");
+const { notifyError } = require("./_utils/errorNotifier");
 const path = require("path");
 const fs = require("fs");
 
@@ -39,6 +40,12 @@ module.exports = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error("Form parse error:", err);
+        notifyError({
+          endpoint: "/api/compress-batch",
+          message: err.message,
+          stack: err.stack,
+          meta: { phase: "form-parse" },
+        });
         return res.status(400).json({ error: "Failed to parse form data." });
       }
 
@@ -114,6 +121,15 @@ module.exports = async (req, res) => {
             `Error compressing ${file.originalFilename}:`,
             compressionErr,
           );
+          notifyError({
+            endpoint: "/api/compress-batch",
+            message: compressionErr.message,
+            stack: compressionErr.stack,
+            meta: {
+              phase: "file-compression",
+              fileName: file.originalFilename,
+            },
+          });
           // Continue with other files even if one fails
           // Clean up temp file on error
           try {
@@ -130,6 +146,12 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error("Batch compression failed:", error);
+    notifyError({
+      endpoint: "/api/compress-batch",
+      message: error.message,
+      stack: error.stack,
+      meta: { phase: "batch-outer" },
+    });
     if (!res.headersSent) {
       res.status(500).json({ error: "Batch compression failed." });
     }
